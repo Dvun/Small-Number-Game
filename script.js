@@ -11,7 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const scoreAfterGame = document.querySelector('.scoreAfterGame')
   let gameCounter = 3
   let randomNumber = Math.floor(Math.random() * 10) + 1
-  let gameScore = ''
+  let gameScore = 0
   let totalScoreWin = 0
   let totalScoreLose = 0
   
@@ -30,9 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
   })
   
 
-  ////////////////////////////1-10 PAINONAPPIA OBJECTISTÄ ESTIMME JOKA NAPPI MIKÄ PAINOTTU//////////////////////////////
+  ////////////////////////////1-10 PAINONAPPIA OBJECTISTÄ ETSIMME NAPPI MIKÄ PAINOTTU//////////////////////////////
   
-  numberBtn.forEach((key) => {
+  numberBtn.forEach((key, index) => {
     key.addEventListener('click', (event) => {
       let buttonNumber = event.target.textContent
       randomNumberText.innerHTML = `<span>Numerosi on: </span>${buttonNumber}`
@@ -46,12 +46,25 @@ document.addEventListener('DOMContentLoaded', () => {
         switch (buttonNumber == randomNumber) {
           case (buttonNumber < randomNumber):
             aboutRandomNumber.innerHTML = 'Numeroni on pienempi'
+
+            const closeArrBtnsAfter = Array.from(numberBtn).slice(index)
+            closeArrBtnsAfter.forEach(ClosetElems => {
+              ClosetElems.classList.add('numberBtnNotActive')
+            })
+      
             break
           case (buttonNumber > randomNumber):
             aboutRandomNumber.innerHTML = 'Numeroni on suurempi'
+            const closeArrBtnsBefore = Array.from(numberBtn).slice(0, index + 1)
+            closeArrBtnsBefore.forEach(closetElems => {
+              closetElems.classList.add('numberBtnNotActive')
+            })
+            
             break
           case (buttonNumber == randomNumber):
-            aboutRandomNumber.innerHTML = 'Voitit'
+            aboutRandomNumber.style.color = 'red'
+            aboutRandomNumber.innerHTML = 'Voitit 🎉'
+            key.style.border = '2px solid red'
                 gameScoreIncrement()
                 totalWinScore()
                 notActiveNumberButtons()
@@ -67,6 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (gameCounter == 0 && buttonNumber != randomNumber) {
         aboutRandomNumber.innerHTML = `Hävisit, numeroni oli: <strong>${randomNumber}</strong>`
+        const a = Array.from(numberBtn.keys())
+        a.findIndex(elem => {
+          if (elem === randomNumber) {
+            console.log(numberBtn[elem - 1]);
+            numberBtn[elem - 1].style.border = '2px solid red'
+          }
+        });
         gameScoreDecrement()
         totalLoseScore()
         setTimeout(() => {
@@ -93,9 +113,13 @@ document.addEventListener('DOMContentLoaded', () => {
     restartBtn.addEventListener('click', () => {
       if (restartBtn) {
         activeNumberButtons()
+        aboutRandomNumber.style.color = 'black'
         aboutRandomNumber.innerHTML = ''
         randomNumberText.innerHTML = ''
         restartGameWindow.style.display = 'none'
+        numberBtn.forEach(key => {
+          key.style.border = '1px solid grey'
+        })
         gameCounter = 3
         randomNumber = Math.floor(Math.random() * 10) + 1
       }
@@ -162,8 +186,9 @@ document.addEventListener('DOMContentLoaded', () => {
     buttonStart.classList.add('buttonStartAfterClose')
     gameContent.style.display = 'none'
     scoreAfterGame.style.display = 'block'
-    scoreAfterGame.innerHTML = ` Your Win: ${totalScoreWin} <br>
-                               Your Lose: ${totalScoreLose}`
+    scoreAfterGame.innerHTML = ` Pelatut pelit: ${totalScoreWin + totalScoreLose} <br>
+                                Voitetut pelit: ${totalScoreWin} <br>
+                               Hävityt pelit: ${totalScoreLose}`
     
   })
 
